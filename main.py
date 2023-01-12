@@ -39,7 +39,7 @@ def print_typed_text(window, target_text):
     target_text_list = [*target_text]
     typed_text_list = []
     typed_text = ""
-    errors = 0
+    mistakes = 0
     i = 0
     while i <= len(target_text):
 
@@ -49,7 +49,7 @@ def print_typed_text(window, target_text):
             else:
                 window.addstr(2, inx, char, color_pair(2))
                 if i == len(target_text):
-                    errors += 1
+                    mistakes += 1
 
 
         typed_char = window.getkey()
@@ -66,7 +66,7 @@ def print_typed_text(window, target_text):
             typed_text_list.append(typed_char)
             typed_text += typed_char
             i += 1
-    return errors
+    return mistakes
 
 def main(window):
     init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -76,13 +76,13 @@ def main(window):
 
     window.addstr("TYPE NUMBER OF WORDS (4 - 10)\n")
     window.addstr(str(word_number := int(window.getstr())))
-    if type(word_number) == int:
-        target_text = pick_text(word_number)
-    else:
-        while type(word_number) != int or word_number < 4 or word_number > 10:
-            window.addstr("Try one more time\n")
-            word_number = window.getstr()
-        target_text = pick_text(word_number)
+
+    target_text = pick_text(word_number)
+    while type(word_number) != int or word_number < 4 or word_number > 10:
+        window.addstr("Try one more time\n")
+        word_number = window.getstr()
+
+    target_text = pick_text(word_number)
 
 
     # TUTAJ ZACZYNA SIĘ WYPISYWANIE TARGET TEKSTU I WPISYWANIE WŁASNEGO
@@ -93,12 +93,16 @@ def main(window):
     countcown(window)
     window.move(2, 0)
     # window.refresh()
+
     start_time = time()
-    errors = print_typed_text(window, target_text)
+    mistakes = print_typed_text(window, target_text)
     typing_time = time() - start_time
     seconds = "{:.3f}".format(typing_time)
+    wpm = "{:.0f}".format(word_number * 60 / typing_time)
+
     window.addstr(4, 0, f'Pisanie zajęło ci {seconds} seconds!')
-    window.addstr(5, 0, f'You made {errors} mistakes!')
+    window.addstr(5, 0, f'You made {mistakes} mistakes!')
+    window.addstr(6, 0, f'{wpm} WPM - words per minute')
     window.addstr(7, 0, "Enter any key to end the program...")
     window.getkey()
 
