@@ -48,7 +48,7 @@ def print_typed_text(window, target_text):
                 window.addstr(2, inx, char, color_pair(1))
             else:
                 window.addstr(2, inx, char, color_pair(2))
-                if i == len(typed_text_list) - 1:
+                if i == len(target_text):
                     errors += 1
 
 
