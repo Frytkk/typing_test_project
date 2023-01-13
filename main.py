@@ -12,9 +12,6 @@ def pick_text(word_number):
     target_text = choice(all_data['{}_word_sentence'.format(word_number)])
     return target_text
 
-def itereate():
-    pass
-
 
 def countcown(window):
     # window.move(2, 0)
@@ -39,7 +36,8 @@ def print_typed_text(window, target_text):
     target_text_list = [*target_text]
     typed_text_list = []
     typed_text = ""
-    mistakes = 0
+    wrong_chars = 0
+    all_chars = len(target_text_list)
     i = 0
     while i <= len(target_text):
 
@@ -49,8 +47,7 @@ def print_typed_text(window, target_text):
             else:
                 window.addstr(2, inx, char, color_pair(2))
                 if i == len(target_text):
-                    mistakes += 1
-
+                    wrong_chars += 1
 
         typed_char = window.getkey()
 
@@ -66,7 +63,7 @@ def print_typed_text(window, target_text):
             typed_text_list.append(typed_char)
             typed_text += typed_char
             i += 1
-    return mistakes
+    return all_chars, wrong_chars
 
 def main(window):
     init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -75,15 +72,29 @@ def main(window):
 
 
     window.addstr("TYPE NUMBER OF WORDS (4 - 10)\n")
-    window.addstr(str(word_number := int(window.getstr())))
+    curses.echo()
+    word_number = window.getstr().decode()
 
-    target_text = pick_text(word_number)
-    while type(word_number) != int or word_number < 4 or word_number > 10:
-        window.addstr("Try one more time\n")
-        word_number = window.getstr()
-
-    target_text = pick_text(word_number)
-
+    # target_text = pick_text(word_number)
+    while True:
+        if word_number.isdigit() is False:
+            window.erase()
+            window.addstr("TYPE NUMBER OF WORDS (4 - 10)\n")
+            window.addstr(word_number)
+            window.addstr(1, 0, word_number + " is not an integer between 4 and 10\n")
+            # curses.echo()
+            word_number = window.getstr().decode()
+        elif int(word_number) < 4 or int(word_number) > 10:
+            window.erase()
+            window.addstr("TYPE NUMBER OF WORDS (4 - 10)\n")
+            window.addstr(word_number)
+            window.addstr(1, 0, word_number + " is not an integer between 4 and 10\n")
+            # curses.echo()
+            word_number = window.getstr().decode()
+        else:
+            target_text = pick_text(int(word_number))
+            break
+    curses.noecho()
 
     # TUTAJ ZACZYNA SIĘ WYPISYWANIE TARGET TEKSTU I WPISYWANIE WŁASNEGO
     window.erase()
@@ -95,13 +106,20 @@ def main(window):
     # window.refresh()
 
     start_time = time()
-    mistakes = print_typed_text(window, target_text)
+    all_chars, wrong_chars = print_typed_text(window, target_text)
+    correct_chars = all_chars - wrong_chars
+    all_chars = str(all_chars)
+    wrong_chars = str(wrong_chars)
+    correct_chars = str(correct_chars)
     typing_time = time() - start_time
     seconds = "{:.3f}".format(typing_time)
-    wpm = "{:.0f}".format(word_number * 60 / typing_time)
+    wpm = "{:.0f}".format(int(word_number) * 60 / typing_time)
 
     window.addstr(4, 0, f'Pisanie zajęło ci {seconds} seconds!')
-    window.addstr(5, 0, f'You made {mistakes} mistakes!')
+    window.addstr(5, 0, 'Keystrokes: {}'.format(all_chars))
+    window.addstr(5, len('Keystrokes: {}'.format(all_chars)) + 3, correct_chars, color_pair(1))
+    window.addstr(5, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 3, "/")
+    window.addstr(5, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 4, wrong_chars, color_pair(2))
     window.addstr(6, 0, f'{wpm} WPM - words per minute')
     window.addstr(7, 0, "Enter any key to end the program...")
     window.getkey()
