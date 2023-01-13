@@ -14,7 +14,6 @@ def pick_text(word_number):
 
 
 def countcown(window):
-    # window.move(2, 0)
     window.addstr(0, 0, "3..")
     window.move(2, 0)
     window.refresh()
@@ -71,25 +70,22 @@ def main(window):
     window.clear()
 
 
-    window.addstr("TYPE NUMBER OF WORDS (4 - 10)\n")
+    window.addstr("TYPE NUMBER OF WORDS (4 - 12)\n")
     curses.echo()
     word_number = window.getstr().decode()
 
-    # target_text = pick_text(word_number)
     while True:
         if word_number.isdigit() is False:
             window.erase()
-            window.addstr("TYPE NUMBER OF WORDS (4 - 10)\n")
+            window.addstr("TYPE NUMBER OF WORDS (4 - 12)\n")
             window.addstr(word_number)
             window.addstr(1, 0, word_number + " is not an integer between 4 and 10\n")
-            # curses.echo()
             word_number = window.getstr().decode()
-        elif int(word_number) < 4 or int(word_number) > 10:
+        elif int(word_number) < 4 or int(word_number) > 12:
             window.erase()
-            window.addstr("TYPE NUMBER OF WORDS (4 - 10)\n")
+            window.addstr("TYPE NUMBER OF WORDS (4 - 12)\n")
             window.addstr(word_number)
             window.addstr(1, 0, word_number + " is not an integer between 4 and 10\n")
-            # curses.echo()
             word_number = window.getstr().decode()
         else:
             target_text = pick_text(int(word_number))
@@ -103,19 +99,20 @@ def main(window):
 
     countcown(window)
     window.move(2, 0)
-    # window.refresh()
 
     start_time = time()
     all_chars, wrong_chars = print_typed_text(window, target_text)
+    typing_time = time() - start_time
+
     correct_chars = all_chars - wrong_chars
     all_chars = str(all_chars)
     wrong_chars = str(wrong_chars)
     correct_chars = str(correct_chars)
-    typing_time = time() - start_time
+
     seconds = "{:.3f}".format(typing_time)
     wpm = "{:.0f}".format(int(word_number) * 60 / typing_time)
 
-    window.addstr(4, 0, f'Pisanie zajęło ci {seconds} seconds!')
+    window.addstr(4, 0, f'Time: {seconds} seconds!')
     window.addstr(5, 0, 'Keystrokes: {}'.format(all_chars))
     window.addstr(5, len('Keystrokes: {}'.format(all_chars)) + 3, correct_chars, color_pair(1))
     window.addstr(5, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 3, "/")
