@@ -13,7 +13,7 @@ def pick_text(word_number):
     return target_text
 
 
-def countcown(window):
+def countdown(window):
     window.addstr(0, 0, "3..")
     window.move(2, 0)
     window.refresh()
@@ -31,22 +31,29 @@ def countcown(window):
     window.refresh()
 
 
-def print_typed_text(window, target_text):
+def print_typed_text(window, target_text, start_time):
     target_text_list = [*target_text]
     typed_text_list = []
     typed_text = ""
-    wrong_chars = 0
     all_chars = len(target_text_list)
+    wrong_chars = len(target_text_list)
     i = 0
-    while i <= len(target_text):
+    while time() - start_time <= 0.1:
+        if time() - start_time == 0.1:
+            break
+        window.getkey()
 
+    window.addstr(0, 0, "3..2..1.. START")
+    window.move(2, 0)
+
+    while i <= len(target_text):
+        wrong_chars = len(target_text_list)
         for inx, char in enumerate(typed_text_list):
             if char == target_text_list[inx]:
                 window.addstr(2, inx, char, color_pair(1))
+                wrong_chars -= 1
             else:
                 window.addstr(2, inx, char, color_pair(2))
-                if i == len(target_text):
-                    wrong_chars += 1
 
         typed_char = window.getkey()
 
@@ -56,13 +63,19 @@ def print_typed_text(window, target_text):
                 typed_text = typed_text[:-1]
                 i -= 1
                 window.erase()
+                window.addstr(0, 0, "3..2..1.. START")
                 window.addstr(1, 0, target_text)
                 window.addstr('\n')
+        elif typed_char == '\n':
+            break
         else:
             typed_text_list.append(typed_char)
             typed_text += typed_char
             i += 1
+
+
     return all_chars, wrong_chars
+
 
 def main(window):
     init_pair(1, curses.COLOR_GREEN, curses.COLOR_BLACK)
@@ -75,17 +88,11 @@ def main(window):
     word_number = window.getstr().decode()
 
     while True:
-        if word_number.isdigit() is False:
+        if not word_number.isdigit() or int(word_number) < 4 or int(word_number) > 12:
             window.erase()
             window.addstr("TYPE NUMBER OF WORDS (4 - 12)\n")
             window.addstr(word_number)
-            window.addstr(1, 0, word_number + " is not an integer between 4 and 10\n")
-            word_number = window.getstr().decode()
-        elif int(word_number) < 4 or int(word_number) > 12:
-            window.erase()
-            window.addstr("TYPE NUMBER OF WORDS (4 - 12)\n")
-            window.addstr(word_number)
-            window.addstr(1, 0, word_number + " is not an integer between 4 and 10\n")
+            window.addstr(1, 0, word_number + " is not an integer between 4 and 12\n")
             word_number = window.getstr().decode()
         else:
             target_text = pick_text(int(word_number))
@@ -93,15 +100,15 @@ def main(window):
     curses.noecho()
 
     # TUTAJ ZACZYNA SIĘ WYPISYWANIE TARGET TEKSTU I WPISYWANIE WŁASNEGO
+
     window.erase()
     window.addstr(1, 0, target_text)
     window.addstr('\n')
-
-    countcown(window)
+    countdown(window)
     window.move(2, 0)
 
     start_time = time()
-    all_chars, wrong_chars = print_typed_text(window, target_text)
+    all_chars, wrong_chars = print_typed_text(window, target_text, start_time)
     typing_time = time() - start_time
 
     correct_chars = all_chars - wrong_chars
