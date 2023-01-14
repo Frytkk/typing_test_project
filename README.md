@@ -1,1 +1,3 @@
- project
+Temat projektu:
+
+Do zaimplementowania jest program służący do pomiaru prędkości pisania na klawiaturze. Program powinien wyświetlać pojedynczą linijkę tekstu do napisania. Poprawnie napisane litery powinny być w czasie rzeczywistym zaznaczane na kolor zielony, a błędy na kolor czerwony. Program powinien mieć możliwość konfiguracji np. długość testu, możliwość kasowania błędów itd. Tekst do napisania powinien być wczytywany z zewnętrznego pliku tekstowego. Po zakończeniu testu program powinien wyświetlać podstawowe statystyki tekstu ilość napisanych znaków, ilość napisanych słów, liczba popełnionych błędów.
