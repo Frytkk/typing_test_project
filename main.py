@@ -112,12 +112,12 @@ def main(window):
     seconds = "{:.3f}".format(typing_time)
     wpm = "{:.0f}".format(int(word_number) * 60 / typing_time)
 
-    window.addstr(4, 0, f'Time: {seconds} seconds!')
+    window.addstr(4, 0, f'Time: {seconds} seconds')
     window.addstr(5, 0, 'Keystrokes: {}'.format(all_chars))
     window.addstr(5, len('Keystrokes: {}'.format(all_chars)) + 3, correct_chars, color_pair(1))
     window.addstr(5, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 3, "/")
     window.addstr(5, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 4, wrong_chars, color_pair(2))
-    window.addstr(6, 0, f'{wpm} WPM - words per minute')
+    window.addstr(6, 0, f'WPM: {wpm}')
     window.addstr(7, 0, "Enter any key to end the program...")
     window.getkey()
 
