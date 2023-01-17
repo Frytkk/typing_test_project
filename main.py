@@ -25,11 +25,11 @@ def pick_text(word_number):
 def home_window(window, results):
     window.erase()
     window.addstr(0, 0, "WELCOME TO THE SPEED TYPING TEST!")
-    window.addstr(2, 0, "Press 1 to start the test\n\
-Press 2 to see instructions\n\
-Press 3 to check your results from the current session\n\
-Press 4 to check your all results\n\
-Press Q to exit\n\
+    window.addstr(2, 0, "Please select an option...\n\
+1 - start the test\n\
+2 - see instructions\n\
+3 - check results from the current session\n\
+Q - exit\n\
 ")
     while True:
         key = window.getkey()
@@ -47,10 +47,9 @@ def instructions(window, results):
     window.erase()
     window.addstr(0, 0, "RULES AND FUNCTIONS\n")
     window.addstr(2, 0, "\
-After entering the test you can decide on how many words you want to write\n\
+After entering the test you decide how many words you want to type\n\
 Confirm your choice by clicking Enter\n\
-This will start a short countdown so that you can prepare for typing\n\
-Type as quickly and accurately as possible\n\
+Time starts counting as soon as you start typing\n\
 You can end the test anytime by clicking Enter\n\
 After the test, results will be displayed\n\
 ")
@@ -62,15 +61,14 @@ def choose_words_number(window):
     window.erase()
     window.addstr("TYPE NUMBER OF WORDS (4 - 12)\n")
     curses.echo()
-    word_number = window.getstr().decode()
 
     while True:
+        word_number = window.getstr().decode()
         if not word_number.isdigit() or int(word_number) < 4 or int(word_number) > 12:
             window.erase()
             window.addstr("TYPE NUMBER OF WORDS (4 - 12)\n")
             window.addstr(word_number)
             window.addstr(1, 0, word_number + " is not an integer between 4 and 12\n")
-            word_number = window.getstr().decode()
         else:
             target_text = pick_text(int(word_number))
             break
@@ -79,17 +77,17 @@ def choose_words_number(window):
     return word_number, target_text
 
 
-def print_typed_text(window, typed_text_as_list, target_text):
+def print_typed_text(window, typed_text_as_list, target_text, results):
 
     target_text_list = [*target_text]
     typed_text_list = typed_text_as_list
     typed_text = ""
     all_chars = len(target_text_list)
     wrong_chars = len(target_text_list)
-    i = 0
+    i = len(typed_text_as_list)
 
     window.addstr(0, 0, "Start typing when you are ready!")
-    window.move(2, 0)
+    window.move(3, 0)
     typing_started = False
 
     while i <= len(target_text):
@@ -104,7 +102,7 @@ def print_typed_text(window, typed_text_as_list, target_text):
                 i -= 1
                 window.erase()
                 window.addstr(0, 0, "Start typing when you are ready!")
-                window.addstr(1, 0, target_text)
+                window.addstr(2, 0, target_text)
                 window.addstr('\n')
         elif typed_char == '\n':
             break
@@ -118,10 +116,10 @@ def print_typed_text(window, typed_text_as_list, target_text):
         wrong_chars = len(target_text_list)
         for inx, char in enumerate(typed_text_list):
             if char == target_text_list[inx]:
-                window.addstr(2, inx, char, color_pair(1))
+                window.addstr(3, inx, char, color_pair(1))
                 wrong_chars -= 1
             else:
-                window.addstr(2, inx, char, color_pair(2))
+                window.addstr(3, inx, char, color_pair(2))
 
     return all_chars, wrong_chars, start_time
 
@@ -131,9 +129,9 @@ def actual_game(window, results):
 
     window.erase()
     window.addstr(0, 0, "Start typing when you are ready!\n")
-    window.addstr(1, 0, target_text + "\n")
+    window.addstr(2, 0, target_text + "\n")
 
-    all_chars, wrong_chars, start_time = print_typed_text(window, [], target_text)
+    all_chars, wrong_chars, start_time = print_typed_text(window, [], target_text, results)
 
     typing_time = time() - start_time
 
@@ -145,24 +143,24 @@ def actual_game(window, results):
     seconds = "{:.3f}".format(typing_time)
     wpm = "{:.0f}".format(int(word_number) * 60 / typing_time)
 
-    window.addstr(4, 0, f'Time: {seconds} seconds')
-    window.addstr(5, 0, 'Keystrokes: {}'.format(all_chars))
-    window.addstr(5, len('Keystrokes: {}'.format(all_chars)) + 3, correct_chars, color_pair(1))
-    window.addstr(5, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 3, "/")
-    window.addstr(5, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 4, wrong_chars, color_pair(2))
-    window.addstr(6, 0, f'WPM: {wpm}')
-    window.addstr(7, 0, "Enter Esc to end the program or Enter to repeat the test...")
+    window.addstr(5, 0, f'Time: {seconds} seconds')
+    window.addstr(6, 0, 'Keystrokes: {}'.format(all_chars))
+    window.addstr(6, len('Keystrokes: {}'.format(all_chars)) + 3, correct_chars, color_pair(1))
+    window.addstr(6, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 3, "/")
+    window.addstr(6, len('Keystrokes: {}'.format(all_chars) + correct_chars) + 4, wrong_chars, color_pair(2))
+    window.addstr(7, 0, f'WPM: {wpm}')
+    window.addstr(8, 0, "Press M to go to main menu or R to repeat the test...")
 
     results.append(Result(seconds, word_number, correct_chars, wrong_chars, wpm))
 
     key = None
 
-    while key != '^[' or key != '\n' or ord(key) != 27:
+    while key not in ['R', 'r', 'M', 'm']:
         key = window.getkey()
-        if key == '\n':
+        if key in ['R', 'r']:
             return actual_game(window, results)
-        elif key == '^[' or ord(key) == 27:
-            home_window(window, results)
+        elif key in ['M', 'm']:
+            return home_window(window, results)
 
 
 def session_results(window, results):
