@@ -3,7 +3,7 @@ from curses import wrapper, color_pair, init_pair
 from time import time
 from random import choice
 import json
-from typing_test_class import TypingTest
+from class_typing import TypingTest
 
 
 def pick_text(word_number):
@@ -45,9 +45,12 @@ Confirm your choice by clicking Enter\n\
 Time starts counting as soon as you start typing\n\
 You can end the test anytime by clicking Enter\n\
 After the test, results will be displayed\n\
+Press M to go to main menu...\
 ")
-    window.getkey()
-    home_window(window, tests)
+    while key not in ['R', 'r', 'M', 'm']:
+        key = window.getkey()
+        if key in ['M', 'm']:
+            return home_window(window, tests)
 
 
 def choose_words_number(window):
@@ -66,7 +69,6 @@ def choose_words_number(window):
             target_text = pick_text(int(word_number))
             break
     curses.noecho()
-
     return word_number, target_text
 
 
@@ -74,7 +76,7 @@ def print_typed_text(window, target_text):
 
     i = 0
     test = TypingTest(target_text)
-
+    
     window.addstr(0, 0, "Start typing when you are ready!")
     window.move(3, 0)
     typing_started = False
