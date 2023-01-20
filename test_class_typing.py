@@ -1,4 +1,4 @@
-from typing_test_class import TypingTest
+from class_typing import TypingTest
 
 
 def test_add_char():
@@ -25,7 +25,6 @@ def test_add_multiple_chars():
 def test_add_correct_text():
     test1 = TypingTest("Ala ma kota")
     typed_text = ""
-
     test1.add_remove_char('A')
     test1.add_remove_char('l')
     test1.add_remove_char('a')
